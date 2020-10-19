@@ -14,8 +14,45 @@ const isEmpty = (text) => {
     return text === '' ? true : false;
 }
 
+const filterByValue = (string) => {
+    Logger.log("[filterByValue()]: starting function.");
+    const Progress = Tamotsu.Table.define({
+        sheetName: 'Progress',
+        rowShift: 1,
+        columnShift: 0,
+    });
+    if (string) {
+        var finalarray = Progress.where((row) => {
+            return String(row["Project"]).trim() !== ''
+        }).all().filter(o =>
+            Object.keys(o).some(k => String(o[k]).toLowerCase().includes(string.toLowerCase())))
+    } else {
+        var finalarray = Progress.where((row) => {
+            return String(row["Project"]).trim() !== ''
+        }).all();
+    }
+
+    // Logger.log("[filterByValue()]" + JSON.stringify(finalarray));
+    return JSON.stringify(finalarray);
+}
+
+const render = (file, argsObject) => {
+    var tmp = HtmlService.createTemplateFromFile(file);
+    if (argsObject) {
+        var keys = Object.keys(argsObject);
+        keys.forEach(function(key) {
+            tmp[key] = argsObject[key];
+        });
+    }
+    return tmp.evaluate().setTitle("- 🕵️‍♀️ Project List -")
+        .setFaviconUrl("https://raw.githubusercontent.com/ggafiled/googlesheet_appscript_project_list/master/img/favicon.ico");
+}
+
 export {
     setDataToStore,
     getDataFromRange,
-    isEmpty
+    isEmpty,
+    filterByValue,
+    render
 };
+

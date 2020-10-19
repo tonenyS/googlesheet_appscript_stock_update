@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@100&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.js"></script>
+    <link rel="stylesheet" href="//cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css">
+    <script src="//cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2.1/liff.js"></script>
+    <title>index</title>
+</head>
+<style>
+    body {
+        margin-bottom: 25px;
+        font-family: 'Sarabun', sans-serif;
+    }
+    
+    td.details-control {
+        background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+    
+    tr.shown td.details-control {
+        background: url('https://datatables.net/examples/resources/details_close.png') no-repeat center center;
+    }
+</style>
+
+<body>
+    </div>
+    <nav class="navbar navbar-expand-sm bg-white navbar-light">
+        <div class="mx-auto order-0">
+            <div class="d-flex flex-column">
+                <a class="navbar-brand mx-auto" href="#">
+                    <img src="https://www.blisstel.co.th/wp-content/uploads/2018/07/terra-e1531841401859.png" alt="Logo">
+                </a>
+                <h2>เว็บเช็คสถานะสินค้าในสต็อก</h2>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <table id="tabel1">
+        </table>
+    </div>
+</body>
+
+</html>
+
+<script>
+    function format(d) {
+        // `d` is the original data object for the row
+        return '<table class="table">' +
+            '<tr>' +
+            '<th>Min Stock :</th>' +
+            '<td>' + d["Stock"] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<th>MinCW :</th>' +
+            '<td>' + d["MinCW"] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<th>จำนวน MinQT :</th>' +
+            '<td>' + d["MinQT Tower"] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<th>Changwattana :</th>' +
+            '<td>' + d["Changwattana"] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<th>Quintus :</th>' +
+            '<td>' + d["Quintus"] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<th>Total Stock :</th>' +
+            '<td>' + d["Total Stock"] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<th>Critical CW :</th>' +
+            '<td>' + d["Critical CW"] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<th>Critical QT :</th>' +
+            '<td>' + d["Critical QT"] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<th>Crtitical Total :</th>' +
+            '<td>' + d["Crtitical Total"] + '</td>' +
+            '</tr>' +
+            '</table>';
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var dataSet = [];
+        var table = null;
+
+        liff.init({
+            liffId: "1655032626-V4QkoRMZ"
+        }, () => {}, err => console.error(err.code, error.message));
+
+        function onSuccess(DataPass) {
+            console.log(JSON.parse(DataPass));
+            dataSet = JSON.parse(DataPass);
+
+            table = $('#tabel1').DataTable({
+                responsive: true,
+                data: dataSet,
+                columns: [{
+                    "className": 'details-control',
+                    "orderable": false,
+                    "data": null,
+                    "defaultContent": ''
+                }, {
+                    title: "รายการอุปกรณ์",
+                    data:  "รายการอุปกรณ์"
+                }, {
+                    title: "รหัสอุปกรณ์",
+                    data: "รหัสอุปกรณ์",
+                    render: function(data, type, row, meta) {
+                        return data === '' ?
+                            '-' : data;
+                    }
+                }, {
+                    title: "หน่วย",
+                    data: "หน่วย",
+                    render: function(data, type, row, meta) {
+                        return data === '' ?
+                            '-' : data;
+                    }
+                }]
+            });
+        }
+
+        google.script.run.withSuccessHandler(onSuccess)
+            .filterByValue();
+
+        $('#tabel1').on('click', 'td.details-control', function() {
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                row.child.hide();
+                tr.removeClass('shown');
+            } else {
+                // Open this row
+                row.child(format(row.data())).show();
+                tr.addClass('shown');
+            }
+        });
+    });
+</script>
